@@ -6,6 +6,11 @@ import itertools
 
 
 def daterange(date1, date2):
+    """
+    date 1 - the date we are stating looking for days off
+    date 2 - the date we stop looking for days off
+    returns the interval in wich we search for optimal days
+    """
     for n in range(int((date2 - date1).days) + 1):
         yield date1 + datetime.timedelta(n)
 
