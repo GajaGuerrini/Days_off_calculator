@@ -16,13 +16,17 @@ def daterange(date1, date2):
 
 
 def find_continuous_sets(_set, min_length=3):
+    """
+    finding continuous set of days
+    allowing long weekends
+    """
     # print("_set", _set)
     sets = []
 
     prev = None
     continuous_set = []
     for x in _set:
-        # print("x:", x, "prev: ", prev)
+        #print("x:", x, "prev: ", prev)
         if prev == None:
             prev = x
             continuous_set.append(x)
@@ -43,6 +47,9 @@ def find_continuous_sets(_set, min_length=3):
 
 
 def test_find_continuous_sets():
+    """
+    trying to test, do better
+    """
     test_cases = [
         ([1, 2, 3, 4, 5, 6, 7, 8, 14, 15], [[1, 2, 3, 4, 5, 6, 7, 8], [14, 15]]),
         (
@@ -60,17 +67,25 @@ def test_find_continuous_sets():
 
 
 def calculate_sets_weight(_sets):
-    print("\n\n_sets:", _sets)
+    """
+    evelueting wich set is "better" than other 
+    returns a number between 0 and 1 --> smaller the number, better the set 
+    """
+
+    #print("\n\n_sets:", _sets)
     power = len(_sets)
-    print("power:", power)
+    #print("power:", power)
     weights = [1 / len(s) * power for s in _sets]
-    print("weights", weights)
+    #print("weights", weights)
     total_weight = sum(weights)
-    print("total_weight", total_weight)
+    #print("total_weight", total_weight)
     return total_weight
 
 
 def test_calculate_sets_weight():
+    """
+    trying to test, do better
+    """
     test_cases = [
         ([[1, 2, 3, 4, 5, 6, 7, 8], [14, 15]], 1.25),
         ([[1, 2], [7, 8], [10, 11, 12, 13, 14, 15]], 3.5),
@@ -89,6 +104,10 @@ def test_calculate_sets_weight():
 
 
 def get_weekend_days(year):
+    """
+    figuring out wich days are weekends day
+    this need to be written to have the possibility of any other days in a week off (for the whole year)
+    """
     weekend_days = set()
     s = datetime.date(year, 1, 1)
     e = datetime.date(year, 1, 31)     # samo en mesec, ni celo leto 
@@ -104,12 +123,18 @@ def get_weekend_days(year):
 
 
 def date_to_day_of_year(d: datetime.date) -> int:
+    """
+    convert date to number: 
+    1st Jan --> 1
+    1st Feb --> 32
+    """
     return d.timetuple().tm_yday
 
 
 def get_day_of_year_from_national_holidays(
     list_of_dates: list[datetime.date], move_holidays=True
 ) -> set:
+   
     holidays_as_day_of_year = set()
 
     for d in list_of_dates:
@@ -198,10 +223,10 @@ def find_optimum(
         )
         print("month optimum", month_optimum)
         month_combs.extend(month_optimum[0][0])
-    for comb in month_combs:
-        print("\n\n-----\n\n")
-        for d in comb:
-            print(day_of_year_to_date(year, d))
+    # for comb in month_combs:
+    #     #print("\n\n-----\n\n")
+    #     for d in comb:
+    #         #print(day_of_year_to_date(year, d))
 
 
 def day_of_year_to_date(year, di: int) -> datetime.date:
@@ -214,20 +239,20 @@ def find_interval_optimum(
     start_date: datetime.date,
     end_date: datetime.date,
 ):
-    print(start_date, end_date)
+    #print(start_date, end_date)
     weekends = get_weekend_days(year)
     national_holidays_int = get_day_of_year_from_national_holidays(
         national_holidays, move_holidays=True     # zakaj je tle move holidays true hard codirano
     )
 
-    print(national_holidays_int)
+    #print(national_holidays_int)
 
 
 
     constant_days_off = weekends.union(national_holidays_int)
 
-    print(weekends) 
-    print(constant_days_off)
+    #print(weekends) 
+    #print(constant_days_off)
 
     
     start_int = 1          #date_to_day_of_year(start_date)
@@ -236,23 +261,23 @@ def find_interval_optimum(
 
     interval_ints = set(range(start_int, end_int))
 
-    print("interval:", interval_ints)     
+    #print("interval:", interval_ints)     
 
-    print("total days off", constant_days_off)     # tle gledamo samo wikende od januarja, cel interval pa je januar+februar ?
+    #print("total days off", constant_days_off)     # tle gledamo samo wikende od januarja, cel interval pa je januar+februar ?
     
 
     all_possible_days_off = set(
         range(min(constant_days_off), max(constant_days_off))
     ).difference(constant_days_off)
 
-    print("all possible days off", all_possible_days_off)
+    #print("all possible days off", all_possible_days_off)
 
 
     all_possible_days_off = set(
         x for x in all_possible_days_off if start_int <= x <= end_int)  
 
     print("all_possible_days_off - check", len(all_possible_days_off))
-    print("all_possible_days_off", all_possible_days_off, type(all_possible_days_off)) 
+    #print("all_possible_days_off", all_possible_days_off, type(all_possible_days_off)) 
 
     all_possible_days_off = [
         set(c) for c in itertools.combinations(all_possible_days_off, interval_days_off)]   # to naredi kombinacije brez ponavljananja
@@ -273,8 +298,8 @@ def find_interval_optimum(
         find_continuous_sets(_set) for _set in all_possible_days_off_with_holidays
     ]
     
-    print("combs_as_nested_sets")
-    print("combs_as_nested_sets", days_as_continuous_sets)    
+    #print("combs_as_nested_sets")
+    #print("combs_as_nested_sets", days_as_continuous_sets)    
     
     days_as_continuous_sets_weighted = [
         (comb, calculate_sets_weight(comb)) for comb in days_as_continuous_sets
@@ -296,15 +321,15 @@ def find_interval_optimum(
 
 
     ordered = sorted(days_as_continuous_sets_weighted, key=lambda x: x[1])
-    for comb, weight in ordered[:3]:
-        print("\n\n-----------------------------\n\n")
-        print(comb)
-        for date_set in comb:
-            print("----")
-            for d in date_set:
-                print(datetime.date(year, 1, 1) + datetime.timedelta(days=d - 1))
-    print("alshd", ordered[:3])            
-    return ordered[:3]
+    #for comb, weight in ordered[:3]:
+        #print("\n\n-----------------------------\n\n")
+        #print(comb)
+    #     for date_set in comb:
+    #         print("----")
+    #         for d in date_set:
+    #             print(datetime.date(year, 1, 1) + datetime.timedelta(days=d - 1))
+    # print("alshd", ordered[:3])            
+    # return ordered[:3]
     #raise Exception("bez")
 
 if __name__ == "__main__":
@@ -334,4 +359,4 @@ if __name__ == "__main__":
         total_days_off,
         national_holidays,
     )
-    print("abba", fu)
+    print("find optimum", fu)
